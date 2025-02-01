@@ -3,7 +3,7 @@ name: Test and Deploy
 env:
     RG: uow-bicep
     RG-LOCATION: northeurope
-    TEMPLATE_FILE_PATH: "Cloud Infrastructure/Main.bicep"
+    TEMPLATE_FILE_PATH: Cloud Infrastructure/Main.bicep
 
 on:
     pull_request:
@@ -44,7 +44,7 @@ jobs:
                 inlineScript: |
                     az deployment group validate \
                     --resource-group ${{ env.RG }} \
-                    --template-file ${{ env.TEMPLATE_FILE_PATH }}
+                    --template-file "${{ env.TEMPLATE_FILE_PATH }}"
     
     Deploy:
       needs: Unit-Test
