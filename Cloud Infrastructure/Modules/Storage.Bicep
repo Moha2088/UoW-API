@@ -1,5 +1,5 @@
 @description('Name of the storageaccount')
-param storageName string = 'uow-${uniqueString(resourceGroup().id)}'
+param storageName string = 'uow${uniqueString(resourceGroup().id)}'
 
 @description('Storage redundancy type')
 @allowed([

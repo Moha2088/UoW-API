@@ -3,7 +3,7 @@ name: Test and Deploy
 env:
     RG: uow-bicep
     RG-LOCATION: northeurope
-    TEMPLATE_FILE_PATH: Cloud Infrastructure/Main.bicep
+    TEMPLATE_FILE_PATH: Cloud Infrastructure/main.bicep
 
 on:
     pull_request:
