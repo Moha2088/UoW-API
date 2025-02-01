@@ -64,4 +64,4 @@ jobs:
               inlineScript: |
                   az deployment group create \
                   --resource-group ${{ env.RG }} \
-                  --template-file ${{ env.TEMPLATE_FILE_PATH }} \
+                  --template-file "${{ env.TEMPLATE_FILE_PATH }}"
