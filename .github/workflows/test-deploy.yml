@@ -47,6 +47,7 @@ jobs:
                     --template-file ${{ env.TEMPLATE_FILE_PATH }}
     
     Deploy:
+      needs: Unit-Test
       runs-on: ubuntu-latest
 
       steps:
