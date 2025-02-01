@@ -1,5 +1,5 @@
 @description('Name of the storageaccount')
-param storageName string = 'UoW-${uniqueString(resourceGroup().id)}'
+param storageName string = 'uow-${uniqueString(resourceGroup().id)}'
 
 @description('Storage redundancy type')
 @allowed([
@@ -13,6 +13,10 @@ resource storageAcc 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   kind: 'BlobStorage'
   location: location
   name: storageName
+  
+  properties:{
+    accessTier:'Hot'
+  }
   
   sku: {
     name: skuName
