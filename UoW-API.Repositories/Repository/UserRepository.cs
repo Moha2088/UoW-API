@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using UoW_API.Repositories.Data;
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.User;
@@ -11,9 +15,21 @@ public class UserRepository : IUserRepository
 {
     private readonly DataContext _context;
     private readonly IMapper _mapper;
+    private readonly BlobServiceClient _blobServiceClient;
+    private readonly SecretClient _secretClient;
+    private readonly Uri? _vaultUri;
 
-    public UserRepository(DataContext context, IMapper mapper) =>
-        (_context, _mapper) = (context, mapper);
+    public UserRepository(DataContext context, IMapper mapper)
+    {
+        _context = context;
+        _mapper = mapper;
+
+        IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        _vaultUri = new Uri(config["AzureCredentials:VaultUri"] ?? "Value not found");
+        _secretClient = new SecretClient(_vaultUri, new DefaultAzureCredential());
+        var storageConnectionString = _secretClient.GetSecret("STORAGE-CONNECTIONSTRING").Value.Value;
+        _blobServiceClient = new BlobServiceClient(storageConnectionString);
+    }
 
 
     public async Task<UserGetDto> CreateUser(UserCreateDto dto, CancellationToken cancellationToken)
