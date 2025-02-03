@@ -1,12 +1,12 @@
-﻿using UoW_API.Repositories.Entities.Dtos.User;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UoW_API.Repositories.Entities.Dtos.User;
 
-namespace UoW_API.Repositories.Repository.Interfaces;
-public interface IUserRepository
+namespace UoW_API.Services.Interfaces;
+public interface IUserService
 {
     Task<UserGetDto> CreateUser(UserCreateDto dto, CancellationToken cancellationToken);
     Task<IEnumerable<UserGetDto>> GetUsers(CancellationToken cancellationToken);

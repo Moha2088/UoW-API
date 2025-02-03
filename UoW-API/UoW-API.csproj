@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UoW-API.Repositories\UoW-API.Repositories.csproj" />
+    <ProjectReference Include="..\UoW-API.Services\UoW-API.Services.csproj" />
   </ItemGroup>
 
 </Project>

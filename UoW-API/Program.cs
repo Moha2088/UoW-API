@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<DataContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("CleanProjectDB") ?? throw new InvalidOperationException("ConnectionString 'CleanProjectDB' not found!")));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection") ?? throw new InvalidOperationException("ConnectionString 'DBConnection' not found!")));
 
 
 builder.Services.AddEndpointsApiExplorer();

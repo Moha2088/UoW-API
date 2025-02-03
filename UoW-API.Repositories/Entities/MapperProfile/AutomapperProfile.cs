@@ -22,5 +22,8 @@ internal class AutomapperProfile : Profile
         CreateMap<ProjectCreateDto, Project>();
         CreateMap<Project, ProjectGetDto>();
         #endregion
+
+        var automapperConfig = new MapperConfiguration(x => x.AddProfile<AutomapperProfile>());
+        automapperConfig.AssertConfigurationIsValid();
     }
 }

@@ -18,7 +18,7 @@ public class DataContext : DbContext
         builder.ApplyConfigurationsFromAssembly(typeof(UserEntitytypeConfiguration).Assembly);
     }
 
-    public DbSet<Project> Projects { get; set; }
+    public DbSet<Project> Projects { get; set; } = default!;
 
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; } = default!;
 }

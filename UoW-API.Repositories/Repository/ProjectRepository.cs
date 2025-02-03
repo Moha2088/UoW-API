@@ -1,4 +1,7 @@
-﻿using UoW_API.Repositories.Data;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using UoW_API.Repositories.Data;
+using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
 using UoW_API.Repositories.Repository.Interfaces;
 
@@ -6,30 +9,37 @@ namespace UoW_API.Repositories.Repository;
 public class ProjectRepository : IProjectRepository
 {
     private readonly DataContext _context;
+    private readonly IMapper _mapper;
 
-    public ProjectRepository(DataContext context)
+    public ProjectRepository(DataContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
-    public Task<ProjectGetDto> CreateProject(ProjectCreateDto dto)
+    public async Task<ProjectGetDto> CreateProject(ProjectCreateDto dto)
     {
-        throw new NotImplementedException();
+        var dbProject = _mapper.Map<Project>(dto);
+        _context.Projects.Add(dbProject);
+        return _mapper.Map<ProjectGetDto>(dbProject);
     }
 
 
-    public Task DeleteProject(int id)
+    public async Task DeleteProject(int id)
     {
-        throw new NotImplementedException();
+        var dbProject = await _context.Projects.FindAsync(id);
+        _context.Remove(dbProject);
     }
 
-    public Task<IEnumerable<ProjectGetDto>> GetProject()
+    public async Task<IEnumerable<ProjectGetDto>> GetProjects()
     {
-        throw new NotImplementedException();
+        var dbProjects = await _context.Projects.ToListAsync(); ;
+        return _mapper.Map<List<ProjectGetDto>>(dbProjects);
     }
 
-    public Task<ProjectGetDto> GetProject(int id)
+    public async Task<ProjectGetDto> GetProject(int id)
     {
-        throw new NotImplementedException();
+        var dbProject = await _context.Projects.FindAsync(id);
+        return _mapper.Map<ProjectGetDto>(dbProject);
     }
 }

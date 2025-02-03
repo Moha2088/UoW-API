@@ -39,26 +39,8 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        bool succeeded = true;
-
-        using var transaction = _context.Database.BeginTransaction();
-
-        try
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-            transaction.Commit();
-            return succeeded;
-        }
-
-        catch (OperationCanceledException)
-        {
-            _logger.LogError("Changes could not be saved! Rolling back changes.");
-            transaction.Rollback();
-            succeeded = false;
-        }
-
-        return succeeded;
+      await _context.SaveChangesAsync(cancellationToken);
     }
 }

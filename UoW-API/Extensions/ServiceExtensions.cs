@@ -1,5 +1,6 @@
 ﻿using UoW_API.Repositories.Repository.Interfaces;
 using Scrutor;
+using AutoMapper;
 
 namespace UoW_API.Extensions;
 
@@ -20,6 +21,7 @@ public static class ServiceExtensions
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
-        //collection.AddAutoMapper(typeof(AutoMapperProfile));
+
+        collection.AddAutoMapper(typeof(Program));
     }
 }

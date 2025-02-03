@@ -11,7 +11,9 @@ public class ProjectEntitytypeConfiguration : IEntityTypeConfiguration<Project>
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Name).HasColumnType("varchar(20)");
+        builder.Property(x => x.Name)
+            .HasColumnType("varchar(20)")
+            .IsRequired();
 
 
 
