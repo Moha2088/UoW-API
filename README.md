@@ -1,2 +1,3 @@
-# Clean-Project-Backend
-.NET API with Clean Architecture
+# UoW-API
+
+.NET API wth Unit of Work pattern
