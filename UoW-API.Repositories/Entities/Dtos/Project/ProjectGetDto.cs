@@ -1,18 +1,7 @@
 ﻿using UoW_API.Repositories.Entities.Dtos.User;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using UoW_API.Repositories.Enums;
 namespace UoW_API.Repositories.Entities.Dtos.Project;
-public class ProjectGetDto
-{
-    public int Id { get; set; }
 
-    public int Name { get; set; }
-
-    public string Description { get; set; } = null!;
-
-    public List<UserGetDto>? Users { get; set; }
-}
+public record ProjectGetDto(int Id, string Name, string Description, CurrentState State, DateTimeOffset From, 
+    DateTimeOffset To, List<UserGetDto>? Users);

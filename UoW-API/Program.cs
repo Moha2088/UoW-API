@@ -3,7 +3,6 @@
 using UoW_API.Repositories.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
-using UoW_API.Repositories.Entities.;
 using UoW_API.Repositories.Entities;
 
 var builder = WebApplication.CreateBuilder(args);

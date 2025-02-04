@@ -32,7 +32,7 @@ public class UserRepository : IUserRepository
     }
 
 
-    public async Task<UserGetDto> CreateUser(UserCreateDto dto, CancellationToken cancellationToken)
+    public async Task<UserGetDto> CreateUser(UserCreateDto dto)
     {
         var dbUser = _mapper.Map<User>(dto);
         _context.Users.Add(dbUser);
@@ -43,7 +43,7 @@ public class UserRepository : IUserRepository
     {
         var dbUser = await _context.Users
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id.Equals(id));
+            .SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
 
         _context.Users.Remove(dbUser);
     }
@@ -52,7 +52,7 @@ public class UserRepository : IUserRepository
     {
         var dbUser = await _context.Users
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id.Equals(id));
+            .SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
 
         if (dbUser == null)
         {
@@ -66,7 +66,7 @@ public class UserRepository : IUserRepository
     {
         var dbUsers = await _context.Users
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return _mapper.Map<List<UserGetDto>>(dbUsers);
     }

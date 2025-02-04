@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace UoW_API.Repositories.Repository.Interfaces;
 public interface IUserRepository
 {
-    Task<UserGetDto> CreateUser(UserCreateDto dto, CancellationToken cancellationToken);
+    Task<UserGetDto> CreateUser(UserCreateDto dto);
     Task<IEnumerable<UserGetDto>> GetUsers(CancellationToken cancellationToken);
     Task<UserGetDto> GetUser(int id, CancellationToken cancellationToken);
     Task DeleteUser(int id, CancellationToken cancellationToken);

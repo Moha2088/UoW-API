@@ -4,7 +4,7 @@ namespace UoW_API.Repositories.Repository.Interfaces;
 public interface IProjectRepository
 {
     Task<ProjectGetDto> CreateProject(ProjectCreateDto dto);
-    Task<IEnumerable<ProjectGetDto>> GetProjects();
-    Task<ProjectGetDto> GetProject(int id);
-    Task DeleteProject(int id);
+    Task<IEnumerable<ProjectGetDto>> GetProjects(CancellationToken cancellationToken);
+    Task<ProjectGetDto> GetProject(int id, CancellationToken cancellationToken);
+    Task DeleteProject(int id, CancellationToken cancellationToken);
 }

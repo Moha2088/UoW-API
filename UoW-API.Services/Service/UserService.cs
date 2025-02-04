@@ -20,7 +20,7 @@ public class UserService : IUserService
 
     public async Task<UserGetDto> CreateUser(UserCreateDto dto, CancellationToken cancellationToken)
     {
-        var dbUser = await _unitOfWork.UserRepository.CreateUser(dto, cancellationToken);
+        var dbUser = await _unitOfWork.UserRepository.CreateUser(dto);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return dbUser;
     }
