@@ -17,6 +17,23 @@ public class ProjectEntitytypeConfiguration : IEntityTypeConfiguration<Project>
 
 
 
+        #region Indexes
+
+
+        builder.HasIndex(x => new { x.Name, x.From, x.To, x.State });
+        builder.HasIndex(x => new { x.Name, x.From, x.To, x.State });
+        builder.HasIndex(x => new { x.Name, x.From});
+        builder.HasIndex(x => new { x.Name, x.To});
+        builder.HasIndex(x => new { x.Name});
+
+        builder.HasIndex(x => new {x.From, x.To, x.State});
+
+        builder.HasIndex(x => new {x.To});
+
+        builder.HasIndex(x => new{x.State});
+
+        #endregion
+
 
         #region Relations
 

@@ -11,11 +11,18 @@ public class UserEntitytypeConfiguration : IEntityTypeConfiguration<User>
     {
         builder.HasKey(x => x.Id);
 
+
         builder.Property(x => x.Name)
             .HasColumnType("varchar(20)")
             .IsRequired();
 
 
+
+        #region Indexes
+
+        builder.HasIndex(x => x.Name);
+        
+        #endregion
 
 
         #region Relations

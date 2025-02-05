@@ -50,9 +50,12 @@ public class UserRepository : IUserRepository
 
     public async Task<UserGetDto> GetUser(int id, CancellationToken cancellationToken)
     {
+        const string getUserStoredProcedure = "GET_USER";
+
         var dbUser = await _context.Users
+            .FromSqlInterpolated($"{getUserStoredProcedure} {id}")
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
         if (dbUser == null)
         {
