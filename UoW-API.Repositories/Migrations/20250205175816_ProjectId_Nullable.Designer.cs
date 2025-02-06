@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UoW_API.Repositories.Data;
 
@@ -11,9 +12,11 @@ using UoW_API.Repositories.Data;
 namespace UoW_API.Repositories.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250205175816_ProjectId_Nullable")]
+    partial class ProjectId_Nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,7 +66,7 @@ namespace UoW_API.Repositories.Migrations
 
                     b.HasIndex("Name", "From", "To", "State");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("UoW_API.Repositories.Entities.User", b =>
@@ -94,7 +97,7 @@ namespace UoW_API.Repositories.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("UoW_API.Repositories.Entities.User", b =>

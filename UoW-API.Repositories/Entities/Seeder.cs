@@ -27,6 +27,20 @@ public class Seeder
                 );
             }
 
+            if (!context.Projects.Any())
+            {
+                context.Projects.AddRange(
+                    new Project
+                    {
+                        Name = "Backend Ecommerce",
+                        Description = "A backend project for an Ecommerce website, with the implementation of an API, database and Cloud Service integration",
+                        From = DateTimeOffset.Now.AddMinutes(5),
+                        To = DateTimeOffset.Now.AddMonths(1),
+                        State = Enums.CurrentState.PENDING
+                    }
+                );
+            }
+
             await context.SaveChangesAsync();
         }
     }

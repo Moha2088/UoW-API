@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UoW_API.Repositories.Data;
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
+using UoW_API.Repositories.Entities.Dtos.User;
 using UoW_API.Repositories.Enums;
 using UoW_API.Repositories.Repository.Interfaces;
 
@@ -50,7 +51,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<IEnumerable<ProjectGetDto>> GetProjects(CancellationToken cancellationToken)
     {
-        var dbProjects = await _context.Projects.ToListAsync(); ;
+        var dbProjects = await _context.Projects.ToListAsync();
         return _mapper.Map<List<ProjectGetDto>>(dbProjects);
     }
 

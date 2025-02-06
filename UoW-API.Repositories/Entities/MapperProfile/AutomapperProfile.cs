@@ -8,7 +8,7 @@ using UoW_API.Repositories.Entities.Dtos.User;
 using UoW_API.Repositories.Entities.Dtos.Project;
 
 namespace UoW_API.Repositories.Entities.MapperProfile;
-internal class AutomapperProfile : Profile
+public class AutomapperProfile : Profile
 {
     public AutomapperProfile()
     {

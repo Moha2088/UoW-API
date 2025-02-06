@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UoW_API.Repositories.Entities.Dtos.Project;
+using UoW_API.Repositories.Entities.Dtos.User;
 using UoW_API.Repositories.UnitOfWork.Interfaces;
 using UoW_API.Services.Interfaces;
 
@@ -30,28 +31,28 @@ public class ProjectController : ControllerBase
         return Created(nameof(CreateProject), result);
     }
 
-    /// <summary>
-    /// Gets a project
-    /// </summary>
-    /// <param name="id">Id of the project</param>
-    /// <param name="cancellationToken">A cancellation token</param>
-    /// <response code= "200">Returns OK with the project</response>
-    /// <response code= "404">Returns NotFound if the project doesn't exist</response>
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProjectGetDto))]
-    public async Task<IActionResult> GetProject([FromRoute] int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var result = await _projectService.GetProject(id, cancellationToken);
-            return Ok(result);
-        }
+    ///// <summary>
+    ///// Gets a project
+    ///// </summary>
+    ///// <param name="id">Id of the project</param>
+    ///// <param name="cancellationToken">A cancellation token</param>
+    ///// <response code= "200">Returns OK with the project</response>
+    ///// <response code= "404">Returns NotFound if the project doesn't exist</response>
+    //[HttpGet("{id}")]
+    //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProjectGetDto))]
+    //public async Task<IActionResult> GetProject([FromRoute] int id, CancellationToken cancellationToken)
+    //{
+    //    try
+    //    {
+    //        var result = await _projectService.GetProject(id, cancellationToken);
+    //        return Ok(result);
+    //    }
 
-        catch (InvalidOperationException e) 
-        {
-            return NotFound(e.Message);
-        }
-    }
+    //    catch (InvalidOperationException e) 
+    //    {
+    //        return NotFound(e.Message);
+    //    }
+    //}
 
     /// <summary>
     /// Gets a list of projects
@@ -73,7 +74,9 @@ public class ProjectController : ControllerBase
     /// </summary>
     /// <param name="id">Id of the project</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    /// <returns></returns>
+    /// <response code = "204">Returns NoContent</response>
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type= typeof(UserGetDto))]
     public async Task<IActionResult> DeleteProject([FromRoute] int id, CancellationToken cancellationToken)
     {
         await _projectService.DeleteProject(id, cancellationToken);

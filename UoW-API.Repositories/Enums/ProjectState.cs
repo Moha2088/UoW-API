@@ -10,4 +10,4 @@ public enum CurrentState
     PENDING,
     ONGOING,
     FINISHED
-}
+}           

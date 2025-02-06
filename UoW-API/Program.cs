@@ -4,6 +4,8 @@ using UoW_API.Repositories.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using UoW_API.Repositories.Entities;
+using UoW_API.Extensions;
+using UoW_API.Repositories.Entities.MapperProfile;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,8 @@ builder.Services.AddDbContext<DataContext>(opt =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(AutomapperProfile));
+builder.Services.RegisterServices(builder);
 
 var app = builder.Build();
 

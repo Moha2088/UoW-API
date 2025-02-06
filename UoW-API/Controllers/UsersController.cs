@@ -40,29 +40,29 @@ public class UsersController : ControllerBase
         return Created(nameof(CreateUser), result);
     }
 
-    /// <summary>
-    /// Gets a user
-    /// </summary>
-    /// <param name="id">Id of the user</param>
-    /// <param name="cancellationToken">A cancellation token</param>
-    /// <response code= "200">Returns ok if the user exists</response>
-    /// <response code= "200">Returns Not Found if the user doesn't exist</response>
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserGetDto))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetUser([FromRoute] int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var result = await _userService.GetUser(id, cancellationToken);
-            return Ok(result);
-        }
+    ///// <summary>
+    ///// Gets a user
+    ///// </summary>
+    ///// <param name="id">Id of the user</param>
+    ///// <param name="cancellationToken">A cancellation token</param>
+    ///// <response code= "200">Returns ok if the user exists</response>
+    ///// <response code= "200">Returns Not Found if the user doesn't exist</response>
+    //[HttpGet("{id}")]
+    //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserGetDto))]
+    //[ProducesResponseType(StatusCodes.Status404NotFound)]
+    //public async Task<IActionResult> GetUser([FromRoute] int id, CancellationToken cancellationToken)
+    //{
+    //    try
+    //    {
+    //        var result = await _userService.GetUser(id, cancellationToken);
+    //        return Ok(result);
+    //    }
 
-        catch (InvalidOperationException e) 
-        {
-            return NotFound(e.Message);
-        }
-    }
+    //    catch (InvalidOperationException e) 
+    //    {
+    //        return NotFound(e.Message);
+    //    }
+    //}
 
     /// <summary>
     /// Gets a list of users
@@ -84,7 +84,9 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="id">Id of the user</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    /// <returns></returns>
+    /// <response code="204">Returns NoContent</response>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserGetDto))]
     public async Task<IActionResult> DeleteUser([FromRoute] int id, CancellationToken cancellationToken)
     {
         await _userService.DeleteUser(id, cancellationToken);

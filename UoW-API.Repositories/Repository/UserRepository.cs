@@ -25,7 +25,7 @@ public class UserRepository : IUserRepository
         _mapper = mapper;
 
         IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-        _vaultUri = new Uri(config["AzureCredentials:VaultUri"] ?? "Value not found");
+        _vaultUri = new Uri(config["AzureCredentials:VaultUri"] ?? throw new InvalidOperationException("Value not found"));
         _secretClient = new SecretClient(_vaultUri, new DefaultAzureCredential());
         var storageConnectionString = _secretClient.GetSecret("STORAGE-CONNECTIONSTRING").Value.Value;
         _blobServiceClient = new BlobServiceClient(storageConnectionString);
@@ -50,19 +50,19 @@ public class UserRepository : IUserRepository
 
     public async Task<UserGetDto> GetUser(int id, CancellationToken cancellationToken)
     {
-        const string getUserStoredProcedure = "GET_USER";
+        const string getUserStoredProcedure = "GET_USERS";
 
         var dbUser = await _context.Users
             .FromSqlInterpolated($"{getUserStoredProcedure} {id}")
             .AsNoTracking()
-            .SingleOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
 
         if (dbUser == null)
         {
             throw new InvalidOperationException("User not found");
         }
 
-        return _mapper.Map<UserGetDto>(dbUser);
+        return _mapper.Map<UserGetDto>(dbUser.Single());
     }
 
     public async Task<IEnumerable<UserGetDto>> GetUsers(CancellationToken cancellationToken)
@@ -70,6 +70,8 @@ public class UserRepository : IUserRepository
         var dbUsers = await _context.Users
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+
+
 
         return _mapper.Map<List<UserGetDto>>(dbUsers);
     }
