@@ -57,6 +57,7 @@ public class ProjectService : IProjectService
             if (dbProject is not null)
             {
                 _cacheService.Set(id.ToString(), dbProject);
+                return dbProject;
             }
         }
 
@@ -65,7 +66,7 @@ public class ProjectService : IProjectService
             throw;
         }
 
-        return (ProjectGetDto)Enumerable.Empty<ProjectGetDto>();
+        return null!;
     }
 
     public async Task<IEnumerable<ProjectGetDto>> GetProjects(CancellationToken cancellationToken)
