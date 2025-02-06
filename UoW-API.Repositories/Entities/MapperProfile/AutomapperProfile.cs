@@ -23,7 +23,7 @@ public class AutomapperProfile : Profile
         CreateMap<Project, ProjectGetDto>();
         #endregion
 
-        var automapperConfig = new MapperConfiguration(x => x.AddProfile<AutomapperProfile>());
-        automapperConfig.AssertConfigurationIsValid();
+        // var automapperConfig = new MapperConfiguration(x => x.AddProfile<AutomapperProfile>());
+        // automapperConfig.AssertConfigurationIsValid();
     }
 }

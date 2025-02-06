@@ -16,6 +16,13 @@ public class RedisCacheService : IRedisCacheService
     {
         _cache = cache;
     }
+    
+    /// <summary>
+    /// Gets a value from the cache, associated with the specified key
+    /// </summary>
+    /// <param name="key"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
 
     public T? Get<T>(string key)
     {
@@ -23,6 +30,12 @@ public class RedisCacheService : IRedisCacheService
        return data is not null ? JsonSerializer.Deserialize<T>(data) : default;
     }
 
+    /// <summary>
+    /// Saves the value to the cache, and associates it with the specified key
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="data"></param>
+    /// <typeparam name="T"></typeparam>
     public void Set<T>(string key, T data)
     {
         var timeToLive = new DistributedCacheEntryOptions()

@@ -1,5 +1,7 @@
 services:
     redis:
         image: redis
+        container_name: UoW-RedisContainer
+        restart: unless-stopped
         ports:
         - "6379:6379"
