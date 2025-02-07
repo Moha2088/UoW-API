@@ -18,6 +18,7 @@ public class UserRepository : IUserRepository
     private readonly BlobServiceClient _blobServiceClient;
     private readonly SecretClient _secretClient;
     private readonly Uri? _vaultUri;
+    const string getUserStoredProcedure = "GET_USER";
 
     public UserRepository(DataContext context, IMapper mapper)
     {
@@ -50,7 +51,7 @@ public class UserRepository : IUserRepository
 
     public async Task<UserGetDto> GetUser(int id, CancellationToken cancellationToken)
     {
-        const string getUserStoredProcedure = "GET_USER";
+        
 
         var dbUser = await _context.Users
             .FromSqlInterpolated($"{getUserStoredProcedure} {id}")
@@ -65,6 +66,30 @@ public class UserRepository : IUserRepository
         return _mapper.Map<UserGetDto>(dbUser.Single());
     }
 
+    public async Task UploadImageAsync(int id, string localFilePath, CancellationToken cancellationToken)
+    {
+        localFilePath = localFilePath.Replace('"', ' ').Trim();
+        BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient("uow-container");
+        string fileName = Path.GetFileName(localFilePath);
+        BlobClient blobClient = blobContainerClient.GetBlobClient(fileName);
+        FileStream stream = File.OpenRead(localFilePath);
+        await blobClient.UploadAsync(stream, true, cancellationToken);
+
+        var dbUserQuery = await _context.Users
+            .FromSqlInterpolated($"{getUserStoredProcedure} {id}")
+            .ToListAsync (cancellationToken);
+
+        var dbUser = dbUserQuery.Single();
+
+        if (dbUser == null)
+        {
+            throw new InvalidOperationException("User not found!");
+        }
+        
+        dbUser.ImageURL = blobClient.Uri.ToString();
+
+    }
+    
     public async Task<IEnumerable<UserGetDto>> GetUsers(CancellationToken cancellationToken)
     {
         var dbUsers = await _context.Users

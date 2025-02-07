@@ -28,7 +28,7 @@ public class UsersController : ControllerBase
     ///         "name": "User"
     ///     }
     /// 
-    /// <remarks>
+    /// </remarks>
     /// <param name="dto">Create user dto</param>
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code="200">Returns OK with the created user</response>
@@ -58,9 +58,9 @@ public class UsersController : ControllerBase
             return Ok(result);
         }
 
-        catch (InvalidOperationException e) 
+        catch (InvalidOperationException e)
         {
-            return NotFound(e.Message);
+            return NotFound();
         }
     }
 
@@ -77,6 +77,31 @@ public class UsersController : ControllerBase
     {
         var results = await _userService.GetUsers(cancellationToken);
         return results.Any() ? Ok(results) : NotFound();
+    }
+
+    /// <summary>
+    /// Uploads an image to the cloud
+    /// </summary>
+    /// <param name="id">Id of the user</param>
+    /// <param name="localFilePath">The path of the image to upload</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    /// <response code="200">Returns OK if the user exists</response>
+    /// <response code="404">Returns NotFound if the user doesn't exist</response>
+    [HttpPost("upload")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadImage([FromRoute] int id, string localFilePath, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _userService.UploadImageAsync(id, localFilePath, cancellationToken);
+            return Ok("Successful upload!");
+        }
+
+        catch (InvalidOperationException e)
+        {
+            return NotFound();
+        }
     }
 
     /// <summary>

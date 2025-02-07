@@ -60,6 +60,20 @@ public class UserService : IUserService
         }
     }
 
+    public async Task UploadImageAsync(int id, string localFilePath, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _unitOfWork.UserRepository.UploadImageAsync(id, localFilePath, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        catch (InvalidOperationException) 
+        {
+            throw;
+        }
+    }
+
     public async Task<IEnumerable<UserGetDto>> GetUsers(CancellationToken cancellationToken)
     {
         var cachedUsers = _cacheService.Get<List<UserGetDto>>(_projectCachingKey);
