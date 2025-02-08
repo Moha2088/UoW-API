@@ -3,6 +3,7 @@ using UoW_API.Repositories.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UoW_API.Services.Interfaces;
+using UoW_API.Repositories.Entities;
 
 namespace UoW_API.Controllers;
 [Route("api/[controller]")]
@@ -34,10 +35,10 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns OK with the created user</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserGetDto))]
-    public async Task<IActionResult> CreateUser([FromBody] UserCreateDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateUser([FromBody] User y, CancellationToken cancellationToken)
     {
-        var result = await _userService.CreateUser(dto, cancellationToken);
-        return Created(nameof(CreateUser), result);
+        await _userService.CreateUser(y, cancellationToken);
+        return Created();
     }
 
     /// <summary>
@@ -87,7 +88,7 @@ public class UsersController : ControllerBase
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code="200">Returns OK if the user exists</response>
     /// <response code="404">Returns NotFound if the user doesn't exist</response>
-    [HttpPost("upload")]
+    [HttpPost("upload/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UploadImage([FromRoute] int id, string localFilePath, CancellationToken cancellationToken)

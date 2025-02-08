@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
 using UoW_API.Repositories.Entities.Dtos.User;
 using UoW_API.Repositories.UnitOfWork.Interfaces;
@@ -25,10 +26,10 @@ public class ProjectController : ControllerBase
     /// <response code="201">Returns created with the project</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ProjectGetDto))]
-    public async Task<IActionResult> CreateProject([FromBody] ProjectCreateDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProject([FromBody] Project project, CancellationToken cancellationToken)
     {
-        var result = await _projectService.CreateProject(dto, cancellationToken);
-        return Created(nameof(CreateProject), result);
+         _projectService.CreateProject(project, cancellationToken);
+        return Created();
     }
 
     /// <summary>

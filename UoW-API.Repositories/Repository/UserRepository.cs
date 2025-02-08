@@ -4,6 +4,7 @@ using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using UoW_API.Repositories.Data;
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.User;
@@ -11,19 +12,16 @@ using UoW_API.Repositories.Repository.Interfaces;
 
 namespace UoW_API.Repositories.Repository;
 
-public class UserRepository : IUserRepository
+public class UserRepository : GenericRepository<User>, IUserRepository
 {
-    private readonly DataContext _context;
-    private readonly IMapper _mapper;
+
     private readonly BlobServiceClient _blobServiceClient;
     private readonly SecretClient _secretClient;
     private readonly Uri? _vaultUri;
-    const string getUserStoredProcedure = "GET_USER";
 
-    public UserRepository(DataContext context, IMapper mapper)
+    public UserRepository(DataContext context) : base(context)
     {
-        _context = context;
-        _mapper = mapper;
+
 
         IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         _vaultUri = new Uri(config["AzureCredentials:VaultUri"] ?? throw new InvalidOperationException("Value not found"));
@@ -32,39 +30,6 @@ public class UserRepository : IUserRepository
         _blobServiceClient = new BlobServiceClient(storageConnectionString);
     }
 
-
-    public async Task<UserGetDto> CreateUser(UserCreateDto dto)
-    {
-        var dbUser = _mapper.Map<User>(dto);
-        _context.Users.Add(dbUser);
-        return _mapper.Map<UserGetDto>(dbUser);
-    }
-
-    public async Task DeleteUser(int id, CancellationToken cancellationToken)
-    {
-        var dbUser = await _context.Users
-            .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
-
-        _context.Users.Remove(dbUser);
-    }
-
-    public async Task<UserGetDto> GetUser(int id, CancellationToken cancellationToken)
-    {
-        
-
-        var dbUser = await _context.Users
-            .FromSqlInterpolated($"{getUserStoredProcedure} {id}")
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-
-        if (dbUser == null)
-        {
-            throw new InvalidOperationException("User not found");
-        }
-
-        return _mapper.Map<UserGetDto>(dbUser.Single());
-    }
 
     public async Task UploadImageAsync(int id, string localFilePath, CancellationToken cancellationToken)
     {
@@ -75,11 +40,8 @@ public class UserRepository : IUserRepository
         FileStream stream = File.OpenRead(localFilePath);
         await blobClient.UploadAsync(stream, true, cancellationToken);
 
-        var dbUserQuery = await _context.Users
-            .FromSqlInterpolated($"{getUserStoredProcedure} {id}")
-            .ToListAsync (cancellationToken);
-
-        var dbUser = dbUserQuery.Single();
+        var dbUser = await _context.Users
+            .SingleOrDefaultAsync(x => x.Id == id);
 
         if (dbUser == null)
         {
@@ -89,15 +51,32 @@ public class UserRepository : IUserRepository
         dbUser.ImageURL = blobClient.Uri.ToString();
 
     }
-    
-    public async Task<IEnumerable<UserGetDto>> GetUsers(CancellationToken cancellationToken)
+
+
+    public override void Create(User entity, CancellationToken cancellationToken)
+    {
+        _context.Users.Add(entity);
+    }
+
+    public async override Task Delete(int id, CancellationToken cancellationToken)
+    {
+        var dbUser = await _context.Users.FindAsync(id, cancellationToken);
+
+        _context.Users.Remove(dbUser!);
+    }
+
+    public async override Task<IEnumerable<User>> GetAll(CancellationToken cancellationToken)
     {
         var dbUsers = await _context.Users
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
+        return dbUsers;
+    }
 
-
-        return _mapper.Map<List<UserGetDto>>(dbUsers);
+    public async override Task<User> Get(int id, CancellationToken cancellationToken)
+    {
+        var dbUser = await _context.Users.FindAsync(id, cancellationToken);
+        return dbUser;
     }
 }
