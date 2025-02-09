@@ -32,27 +32,26 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
         return dbProjects;
     }
 
-    public override void Create(Project entity, CancellationToken cancellationToken)
+    public override void Create(Project dbProject, CancellationToken cancellationToken)
     {
-        
 
-        //    if (dbProject.From < DateTimeOffset.Now && DateTimeOffset.Now < dbProject.To) 
-        //    {
-        //        dbProject.State = CurrentState.ONGOING;
-        //    }
 
-        //    if(dbProject.From > DateTimeOffset.Now)
-        //    {
-        //        dbProject.State = CurrentState.PENDING;
-        //    }
+        if (dbProject.From < DateTimeOffset.Now && DateTimeOffset.Now < dbProject.To)
+        {
+            dbProject.State = CurrentState.ONGOING;
+        }
 
-        //    else
-        //    {
-        //        dbProject.State = CurrentState.FINISHED;
-        //    }
+        if (dbProject.From > DateTimeOffset.Now)
+        {
+            dbProject.State = CurrentState.PENDING;
+        }
 
-        //    _context.Projects.Add(dbProject);
-        //    return _mapper.Map<ProjectGetDto>(dbProject);
+        else
+        {
+            dbProject.State = CurrentState.FINISHED;
+        }
+
+        _context.Projects.Add(dbProject);
     }
 
     public override async Task Delete(int id, CancellationToken cancellationToken)

@@ -19,6 +19,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     {
         _context = context;
         UserRepository = new UserRepository(context);
+        ProjectRepository = new ProjectRepository(context);
         
     }
 

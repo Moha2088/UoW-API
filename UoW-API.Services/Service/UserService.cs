@@ -26,9 +26,10 @@ public class UserService : IUserService
         (_unitOfWork, _cacheService, _logger, _mapper) = (unitOfWork, cacheService, logger, mapper);
 
 
-    public async Task CreateUser(User user, CancellationToken cancellationToken)
+    public async Task CreateUser(UserCreateDto dto, CancellationToken cancellationToken)
     {
-        _unitOfWork.UserRepository.Create(user, cancellationToken);
+        var dbUser = _mapper.Map<User>(dto);
+        _unitOfWork.UserRepository.Create(dbUser, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

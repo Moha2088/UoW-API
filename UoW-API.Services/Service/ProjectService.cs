@@ -31,9 +31,10 @@ public class ProjectService : IProjectService
         _mapper = mapper;
     }
 
-    public async void CreateProject(Project project, CancellationToken cancellationToken)
+    public async void CreateProject(ProjectCreateDto dto, CancellationToken cancellationToken)
     {
-        _unitOfWork.ProjectRepository.Create(project, cancellationToken);
+        var dbProject = _mapper.Map<Project>(dto);
+        _unitOfWork.ProjectRepository.Create(dbProject, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

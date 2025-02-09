@@ -26,9 +26,9 @@ public class ProjectController : ControllerBase
     /// <response code="201">Returns created with the project</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ProjectGetDto))]
-    public async Task<IActionResult> CreateProject([FromBody] Project project, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProject([FromBody] ProjectCreateDto dto, CancellationToken cancellationToken)
     {
-         _projectService.CreateProject(project, cancellationToken);
+         _projectService.CreateProject(dto, cancellationToken);
         return Created();
     }
 

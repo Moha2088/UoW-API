@@ -9,7 +9,7 @@ using UoW_API.Repositories.Entities.Dtos.Project;
 namespace UoW_API.Services.Interfaces;
 public interface IProjectService
 {
-    void CreateProject(Project project, CancellationToken cancellationToken);
+    void CreateProject(ProjectCreateDto dto, CancellationToken cancellationToken);
     Task<IEnumerable<ProjectGetDto>> GetProjects(CancellationToken cancellationToken);
     Task<ProjectGetDto> GetProject(int id, CancellationToken cancellationToken);
     Task DeleteProject(int id, CancellationToken cancellationToken);

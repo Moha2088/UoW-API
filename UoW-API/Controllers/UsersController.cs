@@ -35,9 +35,9 @@ public class UsersController : ControllerBase
     /// <response code="200">Returns OK with the created user</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserGetDto))]
-    public async Task<IActionResult> CreateUser([FromBody] User y, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateUser([FromBody] UserCreateDto dto, CancellationToken cancellationToken)
     {
-        await _userService.CreateUser(y, cancellationToken);
+        await _userService.CreateUser(dto, cancellationToken);
         return Created();
     }
 
