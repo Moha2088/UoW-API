@@ -10,7 +10,7 @@ namespace UoW_API.Repositories.UnitOfWork;
 
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
-    protected readonly DataContext _context;
+    internal readonly DataContext _context;
     public IUserRepository UserRepository { get; }
     public IProjectRepository ProjectRepository { get; }
     private bool disposed = false;

@@ -28,7 +28,7 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ProjectGetDto))]
     public async Task<IActionResult> CreateProject([FromBody] ProjectCreateDto dto, CancellationToken cancellationToken)
     {
-         _projectService.CreateProject(dto, cancellationToken);
+        await _projectService.CreateProject(dto, cancellationToken);
         return Created();
     }
 
@@ -49,7 +49,7 @@ public class ProjectController : ControllerBase
             return Ok(result);
         }
 
-        catch (InvalidOperationException e) 
+        catch (InvalidOperationException e)
         {
             return NotFound(e.Message);
         }
@@ -77,7 +77,7 @@ public class ProjectController : ControllerBase
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code = "204">Returns NoContent</response>
     [HttpDelete]
-    [ProducesResponseType(StatusCodes.Status204NoContent, Type= typeof(UserGetDto))]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserGetDto))]
     public async Task<IActionResult> DeleteProject([FromRoute] int id, CancellationToken cancellationToken)
     {
         await _projectService.DeleteProject(id, cancellationToken);
