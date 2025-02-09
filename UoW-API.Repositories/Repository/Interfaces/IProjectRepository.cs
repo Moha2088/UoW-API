@@ -1,10 +1,8 @@
-﻿using UoW_API.Repositories.Entities.Dtos.Project;
+﻿using UoW_API.Repositories.Entities;
+using UoW_API.Repositories.Entities.Dtos.Project;
 
 namespace UoW_API.Repositories.Repository.Interfaces;
-public interface IProjectRepository
+public interface IProjectRepository : IGenericRepository<Project>
 {
-    Task<ProjectGetDto> CreateProject(ProjectCreateDto dto);
-    Task<IEnumerable<ProjectGetDto>> GetProjects(CancellationToken cancellationToken);
-    Task<ProjectGetDto> GetProject(int id, CancellationToken cancellationToken);
-    Task DeleteProject(int id, CancellationToken cancellationToken);
+    
 }

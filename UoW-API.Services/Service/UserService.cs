@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
+using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.User;
 using UoW_API.Repositories.Repository.Caching.Interfaces;
 using UoW_API.Repositories.UnitOfWork.Interfaces;
@@ -17,22 +19,23 @@ public class UserService : IUserService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRedisCacheService _cacheService;
     private readonly ILogger<UserService> _logger;
-    private const string _projectCachingKey = "GET_PROJECTS";
+    private readonly IMapper _mapper;
+    private const string _getUsersCachingKey = "GET_USERS";
 
-    public UserService(IUnitOfWork unitOfWork, IRedisCacheService cacheService, ILogger<UserService> logger) =>
-        (_unitOfWork, _cacheService, _logger) = (unitOfWork, cacheService, logger);
+    public UserService(IUnitOfWork unitOfWork, IRedisCacheService cacheService, ILogger<UserService> logger, IMapper mapper) =>
+        (_unitOfWork, _cacheService, _logger, _mapper) = (unitOfWork, cacheService, logger, mapper);
 
 
-    public async Task<UserGetDto> CreateUser(UserCreateDto dto, CancellationToken cancellationToken)
+    public async Task CreateUser(UserCreateDto dto, CancellationToken cancellationToken)
     {
-        var dbUser = await _unitOfWork.UserRepository.CreateUser(dto);
+        var dbUser = _mapper.Map<User>(dto);
+        _unitOfWork.UserRepository.Create(dbUser, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return dbUser;
     }
 
     public async Task DeleteUser(int id, CancellationToken cancellationToken)
     {
-        await _unitOfWork.UserRepository.DeleteUser(id, cancellationToken);
+        await _unitOfWork.UserRepository.Delete(id, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -49,9 +52,24 @@ public class UserService : IUserService
 
         try
         {
-            var dbUser = await _unitOfWork.UserRepository.GetUser(id, cancellationToken);
-            _cacheService.Set<UserGetDto>(id.ToString(), dbUser);
-            return dbUser;
+            var dbUser = await _unitOfWork.UserRepository.Get(id, cancellationToken);
+            var dto = _mapper.Map<UserGetDto>(dbUser);
+            _cacheService.Set(id.ToString(), dto);
+            return dto;
+        }
+
+        catch (InvalidOperationException)
+        {
+            throw;
+        }
+    }
+
+    public async Task UploadImageAsync(int id, string localFilePath, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _unitOfWork.UserRepository.UploadImageAsync(id, localFilePath, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         catch (InvalidOperationException)
@@ -62,7 +80,7 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<UserGetDto>> GetUsers(CancellationToken cancellationToken)
     {
-        var cachedUsers = _cacheService.Get<List<UserGetDto>>(_projectCachingKey);
+        var cachedUsers = _cacheService.Get<List<UserGetDto>>(_getUsersCachingKey);
 
         if (cachedUsers is not null)
         {
@@ -70,13 +88,14 @@ public class UserService : IUserService
             return cachedUsers;
         }
 
-        var dbUsers = await _unitOfWork.UserRepository.GetUsers(cancellationToken);
+        var dbUsers = await _unitOfWork.UserRepository.GetAll(cancellationToken);
 
-        if (dbUsers is not null)
+        var dto = _mapper.Map<IEnumerable<UserGetDto>>(dbUsers);
+        if (dto is not null)
         {
-            _cacheService.Set(_projectCachingKey, dbUsers);
+            _cacheService.Set(_getUsersCachingKey, dto);
         }
 
-        return dbUsers!;
+        return dto!;
     }
 }

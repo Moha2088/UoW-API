@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
 using UoW_API.Repositories.Entities.Dtos.User;
 using UoW_API.Repositories.Repository.Caching.Interfaces;
@@ -17,26 +19,28 @@ public class ProjectService : IProjectService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRedisCacheService _cacheService;
     private readonly ILogger<ProjectService> _logger;
+    private readonly IMapper _mapper;
     private const string _getProjectsCachingKey = "GET_PROJECTS";
 
 
-    public ProjectService(IUnitOfWork unitOfWork, IRedisCacheService cacheService, ILogger<ProjectService> logger)
+    public ProjectService(IUnitOfWork unitOfWork, IRedisCacheService cacheService, ILogger<ProjectService> logger, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _cacheService = cacheService;
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task<ProjectGetDto> CreateProject(ProjectCreateDto dto, CancellationToken cancellationToken)
+    public async Task CreateProject(ProjectCreateDto dto, CancellationToken cancellationToken)
     {
-        var dbProject = await _unitOfWork.ProjectRepository.CreateProject(dto);
+        var dbProject = _mapper.Map<Project>(dto);
+        _unitOfWork.ProjectRepository.Create(dbProject, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return dbProject;
     }
 
     public async Task DeleteProject(int id, CancellationToken cancellationToken)
     {
-        await _unitOfWork.ProjectRepository.DeleteProject(id, cancellationToken);
+        await _unitOfWork.ProjectRepository.Delete(id, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -52,12 +56,13 @@ public class ProjectService : IProjectService
 
         try
         {
-            var dbProject = await _unitOfWork.ProjectRepository.GetProject(id, cancellationToken);
+            var dbProject = await _unitOfWork.ProjectRepository.Get(id, cancellationToken);
+            var dto = _mapper.Map<ProjectGetDto>(dbProject);
 
-            if (dbProject is not null)
+            if (dto is not null)
             {
-                _cacheService.Set(id.ToString(), dbProject);
-                return dbProject;
+                _cacheService.Set(id.ToString(), dto);
+                return dto;
             }
         }
 
@@ -79,13 +84,14 @@ public class ProjectService : IProjectService
             return cachedProjects;
         }
 
-        var dbProjects = await _unitOfWork.ProjectRepository.GetProjects(cancellationToken);
+        var dbProjects = await _unitOfWork.ProjectRepository.GetAll(cancellationToken);
+        var dto = _mapper.Map<List<ProjectGetDto>>(dbProjects);
 
         if (dbProjects.Any())
         {
-            _cacheService.Set(_getProjectsCachingKey, dbProjects);
+            _cacheService.Set(_getProjectsCachingKey, dto);
         }
 
-        return dbProjects;
+        return dto;
     }
 }
