@@ -26,9 +26,5 @@ resource redisCache 'Microsoft.Cache/redis@2024-11-01' = {
       family: family
       name: skuName
     }
-
-    redisConfiguration:{
-      'aad-enabled': null
-    }
   }
 }
