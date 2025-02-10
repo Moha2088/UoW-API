@@ -16,3 +16,10 @@ module keyVault 'Modules/KeyVault.Bicep' = {
     location: location
   }
 }
+
+module redisCache 'Modules/RedisCache.Bicep' ={
+  name: 'RedisCache'
+  params:{
+    location: location
+  }
+}
