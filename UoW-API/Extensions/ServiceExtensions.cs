@@ -1,10 +1,10 @@
 ﻿using UoW_API.Repositories.Repository.Interfaces;
 using Scrutor;
-using AutoMapper;
 using UoW_API.Repositories.UnitOfWork.Interfaces;
 using UoW_API.Repositories.UnitOfWork;
 using UoW_API.Services.Interfaces;
-using UoW_API.Repositories.Entities.MapperProfile;
+using StackExchange.Redis;
+using Azure.Security.KeyVault.Secrets;
 
 namespace UoW_API.Extensions;
 
@@ -12,7 +12,7 @@ public static class ServiceExtensions
 {
 
 
-    public static void RegisterServices(this IServiceCollection collection, WebApplicationBuilder builder)
+    public static void RegisterServices(this IServiceCollection collection, WebApplicationBuilder builder, SecretClient client)
     {
         var repositoryAssembly = typeof(IUserRepository).Assembly;
         var serviceAssembly = typeof(IUserService).Assembly;
@@ -30,10 +30,11 @@ public static class ServiceExtensions
 
         #region Redis
 
+        var redisConnectionString = client.GetSecret("REDIS-CONNECTION").Value.Value;
+
         collection.AddStackExchangeRedisCache(opt =>
         {
-            opt.Configuration = builder.Configuration["ConnectionStrings:Redis"];
-            opt.InstanceName = "RedisCache";
+            opt.Configuration = redisConnectionString;
         });
 
         #endregion

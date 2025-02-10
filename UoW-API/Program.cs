@@ -12,6 +12,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,13 @@ builder.Services.AddDbContext<DataContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection") ?? throw new InvalidOperationException("ConnectionString 'DBConnection' not found!")));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.RegisterServices(builder);
+
+
+# region KeyVault Access
+var vaultUri = new Uri(builder.Configuration["AzureCredentials:VaultUri"]!);
+var secretClient = new SecretClient(vaultUri, new DefaultAzureCredential());
+    #endregion
+builder.Services.RegisterServices(builder, secretClient);
 
 builder.Services.AddSwaggerGen(opt =>
 {
