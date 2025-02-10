@@ -21,8 +21,9 @@ public class Seeder
                 context.Users.AddRange(
                     new User
                     {
-                        Name = "Mohamed",
-                        Email = "mo@mo.com"
+                        Name = "Mo",
+                        Email = "mo@mo.com",
+                        Password = "Mo123"
                     }
                 );
             }

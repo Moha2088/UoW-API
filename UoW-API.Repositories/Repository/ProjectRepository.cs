@@ -11,7 +11,7 @@ namespace UoW_API.Repositories.Repository;
 public class ProjectRepository : GenericRepository<Project>, IProjectRepository
 {
 
-    public ProjectRepository(DataContext context): base(context)
+    public ProjectRepository(DataContext context) : base(context)
     {
 
     }
@@ -19,7 +19,7 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
 
     public override async Task<Project> Get(int id, CancellationToken cancellationToken)
     {
-        var dbProject =  await _context.Projects.FindAsync(id, cancellationToken);
+        var dbProject = await _context.Projects.FindAsync(id, cancellationToken);
         return dbProject!;
     }
 
@@ -34,8 +34,6 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
 
     public override void Create(Project dbProject, CancellationToken cancellationToken)
     {
-
-
         if (dbProject.From < DateTimeOffset.Now && DateTimeOffset.Now < dbProject.To)
         {
             dbProject.State = CurrentState.ONGOING;
@@ -57,6 +55,33 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
     public override async Task Delete(int id, CancellationToken cancellationToken)
     {
         var dbProject = await _context.Projects.FindAsync(id, cancellationToken);
-        _context.Projects.Remove(dbProject!);
+
+        if (dbProject == null)
+        {
+            throw new ArgumentNullException("Project not found!");
+        }
+        
+        _context.Projects.Remove(dbProject);
+    }
+
+    public async Task AddUser(int id, int projectId, CancellationToken cancellationToken)
+    {
+        var dbUser = await _context.Users.FindAsync(id, cancellationToken);
+
+        var dbProject = await _context.Projects
+            .Include(x => x.Users)
+            .SingleOrDefaultAsync(x => x.Id.Equals(projectId), cancellationToken);
+
+        if (dbUser is null)
+        {
+            throw new ArgumentNullException("User not found!");
+        }
+
+        if (dbProject is null)
+        {
+            throw new ArgumentNullException("Project not found!");
+        }
+
+        dbUser.ProjectId = dbProject.Id;
     }
 }

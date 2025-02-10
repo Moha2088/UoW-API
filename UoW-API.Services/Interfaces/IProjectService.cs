@@ -13,4 +13,5 @@ public interface IProjectService
     Task<IEnumerable<ProjectGetDto>> GetProjects(CancellationToken cancellationToken);
     Task<ProjectGetDto> GetProject(int id, CancellationToken cancellationToken);
     Task DeleteProject(int id, CancellationToken cancellationToken);
+    Task AddUser(int id, int projectId, CancellationToken cancellationToken);
 }

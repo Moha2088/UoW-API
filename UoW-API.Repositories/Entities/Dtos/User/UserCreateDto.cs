@@ -1,3 +1,3 @@
 ﻿namespace UoW_API.Repositories.Entities.Dtos.User;
 
-public record UserCreateDto(string Name, string Email);
+public record UserCreateDto(string Name, string Password, string Email);
