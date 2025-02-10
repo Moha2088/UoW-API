@@ -2,6 +2,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -21,8 +22,6 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public UserRepository(DataContext context) : base(context)
     {
-
-
         IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         _vaultUri = new Uri(config["AzureCredentials:VaultUri"] ?? throw new InvalidOperationException("Value not found"));
         _secretClient = new SecretClient(_vaultUri, new DefaultAzureCredential());
@@ -33,13 +32,6 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task UploadImageAsync(int id, string localFilePath, CancellationToken cancellationToken)
     {
-        localFilePath = localFilePath.Replace('"', ' ').Trim();
-        BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient("uow-container");
-        string fileName = Path.GetFileName(localFilePath);
-        BlobClient blobClient = blobContainerClient.GetBlobClient(fileName);
-        FileStream stream = File.OpenRead(localFilePath);
-        await blobClient.UploadAsync(stream, true, cancellationToken);
-
         var dbUser = await _context.Users
             .SingleOrDefaultAsync(x => x.Id == id);
 
@@ -47,14 +39,36 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         {
             throw new InvalidOperationException("User not found!");
         }
-        
-        dbUser.ImageURL = blobClient.Uri.ToString();
 
+        localFilePath = localFilePath.Replace('"', ' ').Trim();
+        BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient("uow-container");
+        string fileName = Path.GetFileName(localFilePath);
+        BlobClient blobClient = blobContainerClient.GetBlobClient($"{dbUser.Id}-{fileName}");
+        FileStream stream = File.OpenRead(localFilePath);
+
+
+        var metadata = new Dictionary<string, string>
+        {
+            { "ImageType", "ProfilePicture" }
+        };
+
+        var blobOptions = new BlobUploadOptions
+        {
+            Metadata = metadata,
+        };
+
+        await blobClient.UploadAsync(stream, blobOptions, cancellationToken);
+        dbUser.ImageURL = blobClient.Uri.ToString();
     }
 
 
     public override void Create(User entity, CancellationToken cancellationToken)
     {
+        if(_context.Users.Any(u => u.Email.Equals(entity.Email)))
+        {
+            throw new InvalidOperationException("User already exists");
+        }
+
         _context.Users.Add(entity);
     }
 

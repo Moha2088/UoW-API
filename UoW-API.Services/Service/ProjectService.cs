@@ -94,4 +94,10 @@ public class ProjectService : IProjectService
 
         return dto;
     }
+
+    public async Task AddUser(int id, int projectId, CancellationToken cancellationToken)
+    {
+        await _unitOfWork.ProjectRepository.AddUser(id, projectId, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
 }

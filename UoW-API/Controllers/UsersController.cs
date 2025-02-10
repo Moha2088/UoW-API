@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UoW_API.Services.Interfaces;
 using UoW_API.Repositories.Entities;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UoW_API.Controllers;
 [Route("api/[controller]")]
@@ -26,7 +28,9 @@ public class UsersController : ControllerBase
     ///     
     ///     POST /users
     ///     {
-    ///         "name": "User"
+    ///         "name": "User",
+    ///         "email": "user@example.com",
+    ///         "password": "password"
     ///     }
     /// 
     /// </remarks>
@@ -48,7 +52,7 @@ public class UsersController : ControllerBase
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code= "200">Returns ok if the user exists</response>
     /// <response code= "200">Returns Not Found if the user doesn't exist</response>
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserGetDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUser([FromRoute] int id, CancellationToken cancellationToken)
@@ -88,7 +92,8 @@ public class UsersController : ControllerBase
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code="200">Returns OK if the user exists</response>
     /// <response code="404">Returns NotFound if the user doesn't exist</response>
-    [HttpPost("upload/{id}")]
+    [HttpPost("upload/{id:int}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UploadImage([FromRoute] int id, string localFilePath, CancellationToken cancellationToken)
@@ -111,7 +116,7 @@ public class UsersController : ControllerBase
     /// <param name="id">Id of the user</param>
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code="204">Returns NoContent</response>
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserGetDto))]
     public async Task<IActionResult> DeleteUser([FromRoute] int id, CancellationToken cancellationToken)
     {

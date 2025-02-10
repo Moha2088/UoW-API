@@ -1,12 +1,7 @@
-﻿namespace UoW_API.Repositories.Entities.Dtos.Project;
+﻿using UoW_API.Repositories.Entities.Dtos.User;
+using UoW_API.Repositories.Enums;
 
-public class ProjectCreateDto
-{
-    public string Name { get; set; } = null!;
+namespace UoW_API.Repositories.Entities.Dtos.Project;
 
-    public string Description { get; set; } = null!;
-
-    public DateTimeOffset From { get; set; }
-
-    public DateTimeOffset To { get; set; }
-}
+public record ProjectCreateDto(string Name, string Description,
+    DateTimeOffset From, DateTimeOffset To);

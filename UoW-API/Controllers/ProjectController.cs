@@ -83,4 +83,18 @@ public class ProjectController : ControllerBase
         await _projectService.DeleteProject(id, cancellationToken);
         return NoContent();
     }
+
+    /// <summary>
+    /// Adds a user to a project
+    /// </summary>
+    /// <param name="id">Id of the user</param>
+    /// <param name="projectId">Id of the project</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    /// <response code = "200">Returns OK</response>
+    /// <response code = "404">Returns NotFound if the project or user doesn't exist</response>
+    [HttpPost("addUser/{id}/{projectId}")]
+    public async Task AddUser([FromRoute] int id, int projectId, CancellationToken cancellationToken)
+    {
+        await _projectService.AddUser(id, projectId, cancellationToken);
+    }
 }
