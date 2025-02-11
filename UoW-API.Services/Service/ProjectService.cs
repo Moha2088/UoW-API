@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
 using UoW_API.Repositories.Entities.Dtos.User;
+using UoW_API.Repositories.Exceptions;
 using UoW_API.Repositories.Repository.Caching.Interfaces;
 using UoW_API.Repositories.UnitOfWork.Interfaces;
 using UoW_API.Services.Interfaces;
@@ -40,8 +41,16 @@ public class ProjectService : IProjectService
 
     public async Task DeleteProject(int id, CancellationToken cancellationToken)
     {
-        await _unitOfWork.ProjectRepository.Delete(id, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _unitOfWork.ProjectRepository.Delete(id, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        catch (ProjectNotFoundException) 
+        {
+            throw;
+        }
     }
 
     public async Task<ProjectGetDto> GetProject(int id, CancellationToken cancellationToken)
@@ -66,7 +75,7 @@ public class ProjectService : IProjectService
             }
         }
 
-        catch (InvalidOperationException)
+        catch (ProjectNotFoundException)
         {
             throw;
         }
@@ -97,7 +106,21 @@ public class ProjectService : IProjectService
 
     public async Task AddUser(int id, int projectId, CancellationToken cancellationToken)
     {
-        await _unitOfWork.ProjectRepository.AddUser(id, projectId, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _unitOfWork.ProjectRepository.AddUser(id, projectId, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        catch (ProjectNotFoundException) 
+        {
+            throw;
+        }
+
+        catch (UserNotFoundException)
+        {
+            throw;
+        }
+        
     }
 }

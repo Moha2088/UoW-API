@@ -23,9 +23,9 @@ public class AuthenticationController : ControllerBase
             return Ok(result);
         }
 
-        catch (ArgumentNullException e)
+        catch (ArgumentNullException)
         {
-            return Forbid();
+            return Unauthorized();
         }
     }
 }

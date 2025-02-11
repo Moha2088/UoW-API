@@ -5,6 +5,7 @@ using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
 using UoW_API.Repositories.Entities.Dtos.User;
 using UoW_API.Repositories.Enums;
+using UoW_API.Repositories.Exceptions;
 using UoW_API.Repositories.Repository.Interfaces;
 
 namespace UoW_API.Repositories.Repository;
@@ -20,6 +21,12 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
     public override async Task<Project> Get(int id, CancellationToken cancellationToken)
     {
         var dbProject = await _context.Projects.FindAsync(id, cancellationToken);
+
+        if (dbProject == null) 
+        {
+            throw new ProjectNotFoundException("Project not found!");
+        }
+
         return dbProject!;
     }
 
@@ -58,7 +65,7 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
 
         if (dbProject == null)
         {
-            throw new ArgumentNullException("Project not found!");
+            throw new ProjectNotFoundException("Project not found!");
         }
         
         _context.Projects.Remove(dbProject);
@@ -74,12 +81,12 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
 
         if (dbUser is null)
         {
-            throw new ArgumentNullException("User not found!");
+            throw new UserNotFoundException("User not found!");
         }
 
         if (dbProject is null)
         {
-            throw new ArgumentNullException("Project not found!");
+            throw new ProjectNotFoundException("Project not found!");
         }
 
         dbUser.ProjectId = dbProject.Id;

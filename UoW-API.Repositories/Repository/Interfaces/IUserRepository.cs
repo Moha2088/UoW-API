@@ -10,7 +10,7 @@ namespace UoW_API.Repositories.Repository.Interfaces;
 public interface IUserRepository : IGenericRepository<User>
 {
     Task UploadImageAsync(int id, string localFilePath, CancellationToken cancellationToken);
-
+    Task DeleteImageAsync(int id, CancellationToken cancellationToken);
 
     //Task<UserGetDto> CreateUser(UserCreateDto dto);
     //Task UploadImageAsync(int id, string localFilePath, CancellationToken cancellationToken);

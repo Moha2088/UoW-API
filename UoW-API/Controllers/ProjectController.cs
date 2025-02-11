@@ -2,6 +2,7 @@
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
 using UoW_API.Repositories.Entities.Dtos.User;
+using UoW_API.Repositories.Exceptions;
 using UoW_API.Repositories.UnitOfWork.Interfaces;
 using UoW_API.Services.Interfaces;
 
@@ -49,7 +50,7 @@ public class ProjectController : ControllerBase
             return Ok(result);
         }
 
-        catch (InvalidOperationException e)
+        catch (ProjectNotFoundException e)
         {
             return NotFound(e.Message);
         }
@@ -93,8 +94,22 @@ public class ProjectController : ControllerBase
     /// <response code = "200">Returns OK</response>
     /// <response code = "404">Returns NotFound if the project or user doesn't exist</response>
     [HttpPost("addUser/{id}/{projectId}")]
-    public async Task AddUser([FromRoute] int id, int projectId, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddUser([FromRoute] int id, int projectId, CancellationToken cancellationToken)
     {
-        await _projectService.AddUser(id, projectId, cancellationToken);
+        try
+        {
+            await _projectService.AddUser(id, projectId, cancellationToken);
+            return NoContent();
+        }
+
+        catch (ProjectNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
+        catch (UserNotFoundException e) 
+        {
+            return NotFound(e.Message);
+        }
     }
 }

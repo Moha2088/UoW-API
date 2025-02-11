@@ -6,6 +6,8 @@ using UoW_API.Services.Interfaces;
 using UoW_API.Repositories.Entities;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Azure;
+using UoW_API.Repositories.Exceptions;
 
 namespace UoW_API.Controllers;
 [Route("api/[controller]")]
@@ -63,6 +65,11 @@ public class UsersController : ControllerBase
             return Ok(result);
         }
 
+        catch(UserNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
         catch (InvalidOperationException e)
         {
             return NotFound();
@@ -92,7 +99,7 @@ public class UsersController : ControllerBase
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code="200">Returns OK if the user exists</response>
     /// <response code="404">Returns NotFound if the user doesn't exist</response>
-    [HttpPost("upload/{id:int}")]
+    [HttpPost("image/upload/{id:int}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +117,22 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpDelete("image/delete/{id:int}")]
+    public async Task<IActionResult> DeleteImage([FromRoute] int id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _userService.DeleteImageAsync(id, cancellationToken);
+            return Ok();
+        }
+
+        catch (RequestFailedException)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Image could not be deleted. Try again");
+        }
+        
+    }
+
     /// <summary>
     /// Deletes a user
     /// </summary>
@@ -120,7 +143,15 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserGetDto))]
     public async Task<IActionResult> DeleteUser([FromRoute] int id, CancellationToken cancellationToken)
     {
-        await _userService.DeleteUser(id, cancellationToken);
-        return NoContent();
+        try
+        {
+            await _userService.DeleteUser(id, cancellationToken);
+            return NoContent();
+        }
+
+        catch (UserNotFoundException e) 
+        {
+            return NotFound(e.Message);
+        }
     }
 }

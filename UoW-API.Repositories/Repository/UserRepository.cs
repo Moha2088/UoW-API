@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using UoW_API.Repositories.Data;
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.User;
+using UoW_API.Repositories.Exceptions;
 using UoW_API.Repositories.Repository.Interfaces;
 
 namespace UoW_API.Repositories.Repository;
@@ -37,7 +39,12 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
         if (dbUser == null)
         {
-            throw new InvalidOperationException("User not found!");
+            throw new UserNotFoundException("User not found!");
+        }
+
+        if (dbUser.ImageURL != null) 
+        {
+            throw new InvalidOperationException("Image has already been set");
         }
 
         localFilePath = localFilePath.Replace('"', ' ').Trim();
@@ -61,6 +68,37 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         dbUser.ImageURL = blobClient.Uri.ToString();
     }
 
+    public async Task DeleteImageAsync(int id, CancellationToken cancellationToken)
+    {
+        var dbUser = await _context.Users.FindAsync(id);
+
+        if(dbUser == null)
+        {
+            throw new UserNotFoundException("User not found!");
+        }
+
+        var blobContainer = _blobServiceClient.GetBlobContainerClient("uow-container");
+        var blobToDelete = blobContainer.GetBlobs().SingleOrDefault(x => x.Name.StartsWith(id.ToString()));
+
+        if (blobToDelete == null) 
+        {
+            throw new ArgumentNullException("Blob not found!");
+        }
+        
+        BlobClient blobClient = blobContainer.GetBlobClient(blobToDelete.Name);
+
+        try
+        {
+            await blobClient.DeleteIfExistsAsync();
+        }
+
+        catch (RequestFailedException) 
+        {
+            throw;
+        }
+
+        dbUser.ImageURL = null;
+    }
 
     public override void Create(User entity, CancellationToken cancellationToken)
     {
@@ -75,6 +113,11 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     public async override Task Delete(int id, CancellationToken cancellationToken)
     {
         var dbUser = await _context.Users.FindAsync(id, cancellationToken);
+
+        if (dbUser == null) 
+        {
+            throw new UserNotFoundException("User not found!");
+        }
 
         _context.Users.Remove(dbUser!);
     }
@@ -91,6 +134,12 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     public async override Task<User> Get(int id, CancellationToken cancellationToken)
     {
         var dbUser = await _context.Users.FindAsync(id, cancellationToken);
+
+        if(dbUser == null)
+        {
+            throw new UserNotFoundException("User not found!");
+        }
+
         return dbUser;
     }
 }

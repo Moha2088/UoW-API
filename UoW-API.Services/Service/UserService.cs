@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Azure;
 using Microsoft.Extensions.Logging;
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.User;
+using UoW_API.Repositories.Exceptions;
 using UoW_API.Repositories.Repository.Caching.Interfaces;
 using UoW_API.Repositories.UnitOfWork.Interfaces;
 using UoW_API.Services.Interfaces;
@@ -35,8 +37,16 @@ public class UserService : IUserService
 
     public async Task DeleteUser(int id, CancellationToken cancellationToken)
     {
-        await _unitOfWork.UserRepository.Delete(id, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _unitOfWork.UserRepository.Delete(id, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        catch(UserNotFoundException) 
+        {
+            throw;
+        }
     }
 
     public async Task<UserGetDto> GetUser(int id, CancellationToken cancellationToken)
@@ -58,6 +68,11 @@ public class UserService : IUserService
             return dto;
         }
 
+        catch (UserNotFoundException)
+        {
+            throw;
+        }
+
         catch (InvalidOperationException)
         {
             throw;
@@ -70,6 +85,11 @@ public class UserService : IUserService
         {
             await _unitOfWork.UserRepository.UploadImageAsync(id, localFilePath, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        catch (UserNotFoundException)
+        {
+            throw;
         }
 
         catch (InvalidOperationException)
@@ -97,5 +117,24 @@ public class UserService : IUserService
         }
 
         return dto!;
+    }
+
+    public async Task DeleteImageAsync(int id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _unitOfWork.UserRepository.DeleteImageAsync(id, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        catch (UserNotFoundException)
+        {
+            throw;
+        }
+
+        catch(RequestFailedException) 
+        {
+            throw;
+        }
     }
 }

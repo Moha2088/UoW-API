@@ -34,7 +34,8 @@ public static class ServiceExtensions
 
         collection.AddStackExchangeRedisCache(opt =>
         {
-            opt.Configuration = redisConnectionString;
+
+            opt.Configuration = builder.Configuration.GetConnectionString("Redis");
         });
 
         #endregion
