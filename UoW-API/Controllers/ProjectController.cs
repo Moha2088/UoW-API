@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using UoW_API.Repositories.Entities;
 using UoW_API.Repositories.Entities.Dtos.Project;
 using UoW_API.Repositories.Entities.Dtos.User;
@@ -110,6 +113,31 @@ public class ProjectController : ControllerBase
         catch (UserNotFoundException e) 
         {
             return NotFound(e.Message);
+        }
+    }
+
+    /// <summary>
+    /// Generates a pdf with information about a project
+    /// </summary>
+    /// <param name="projectId">Id of the project</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    /// <response code="200">Returns OK if the upload was successful</response>
+    /// <response code="500">Returns InternalServerError if the upload failed</response>
+    [Authorize]
+    [HttpPost("pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+    public async Task<IActionResult> GeneratePDF(int projectId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _projectService.GeneratePDF(projectId, cancellationToken);
+            return Ok("PDF uploaded!");
+        }
+
+        catch (RequestFailedException e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Upload failed");
         }
     }
 }

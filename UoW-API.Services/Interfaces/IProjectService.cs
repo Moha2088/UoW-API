@@ -14,4 +14,5 @@ public interface IProjectService
     Task<ProjectGetDto> GetProject(int id, CancellationToken cancellationToken);
     Task DeleteProject(int id, CancellationToken cancellationToken);
     Task AddUser(int id, int projectId, CancellationToken cancellationToken);
+    Task GeneratePDF(int projectId, CancellationToken cancellationToken);
 }

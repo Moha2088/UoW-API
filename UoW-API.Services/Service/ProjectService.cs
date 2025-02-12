@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -122,5 +123,18 @@ public class ProjectService : IProjectService
             throw;
         }
         
+    }
+
+    public async Task GeneratePDF(int projectId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _unitOfWork.ProjectRepository.GeneratePDF(projectId, cancellationToken);
+        }
+
+        catch (RequestFailedException)
+        {
+            throw;
+        }
     }
 }
