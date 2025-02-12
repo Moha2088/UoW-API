@@ -16,3 +16,10 @@ module keyVault 'Modules/KeyVault.Bicep' = {
     location: location
   }
 }
+
+module function 'Modules/Function.bicep' ={
+  name: 'Function'
+  params:{
+    location: location
+  }
+}
