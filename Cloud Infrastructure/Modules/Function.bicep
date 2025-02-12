@@ -26,8 +26,6 @@ identity:{
   properties: {
     serverFarmId: servicePlan.id
     siteConfig: {
-      alwaysOn: true
-      
       appSettings: [
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
