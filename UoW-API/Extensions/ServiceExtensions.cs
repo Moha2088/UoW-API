@@ -39,5 +39,7 @@ public static class ServiceExtensions
         });
 
         #endregion
+
+        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
     }
 }
