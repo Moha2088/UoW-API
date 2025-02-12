@@ -3,7 +3,7 @@ param location string
 resource servicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   location: location
   name: 'uowpln${uniqueString(resourceGroup().id)}'
-  sku:{
+  sku: {
     name: 'Y1'
     tier: 'dynamic'
   }
@@ -19,10 +19,15 @@ resource function 'Microsoft.Web/sites@2024-04-01' = {
   name: functionName
 
   kind: 'functionapp'
+identity:{
+  type: 'SystemAssigned'
+}
+
   properties: {
     serverFarmId: servicePlan.id
     siteConfig: {
       alwaysOn: true
+      
       appSettings: [
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
