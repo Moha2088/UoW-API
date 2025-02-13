@@ -80,7 +80,7 @@ public class ProjectController : ControllerBase
     /// <param name="id">Id of the project</param>
     /// <param name="cancellationToken">A cancellation token</param>
     /// <response code = "204">Returns NoContent</response>
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserGetDto))]
     public async Task<IActionResult> DeleteProject([FromRoute] int id, CancellationToken cancellationToken)
     {

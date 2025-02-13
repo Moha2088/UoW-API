@@ -66,7 +66,7 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
             dbProject.State = CurrentState.PENDING;
         }
 
-        else
+        if(dbProject.From < DateTimeOffset.Now && dbProject.To < DateTimeOffset.Now)
         {
             dbProject.State = CurrentState.FINISHED;
         }

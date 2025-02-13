@@ -113,7 +113,7 @@ public class UsersController : ControllerBase
 
         catch (InvalidOperationException e)
         {
-            return NotFound();
+            return NotFound(e.Message);
         }
     }
 

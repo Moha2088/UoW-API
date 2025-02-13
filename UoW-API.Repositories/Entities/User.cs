@@ -12,8 +12,6 @@ public class User
 
     public string Password { get; set; } = null!;
 
-    public string? ImageURL { get; set; }
-
     public int? ProjectId { get; set; }
 
     public Project? Project { get; set; }

@@ -42,14 +42,19 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             throw new UserNotFoundException("User not found!");
         }
 
-        if (dbUser.ImageURL != null) 
-        {
-            throw new InvalidOperationException("Image has already been set");
-        }
-
         localFilePath = localFilePath.Replace('"', ' ').Trim();
         BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient("uow-container");
         string fileName = Path.GetFileName(localFilePath);
+
+        var hasBlob = blobContainerClient
+            .GetBlobs()
+            .Any(x => x.Name.StartsWith(id.ToString()));
+
+        if (hasBlob) 
+        {
+            throw new InvalidOperationException("A profile picture has already been set");
+        }
+
         BlobClient blobClient = blobContainerClient.GetBlobClient($"{dbUser.Id}-{fileName}");
         FileStream stream = File.OpenRead(localFilePath);
 
@@ -65,7 +70,6 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         };
 
         await blobClient.UploadAsync(stream, blobOptions, cancellationToken);
-        dbUser.ImageURL = blobClient.Uri.ToString();
     }
 
     public async Task DeleteImageAsync(int id, CancellationToken cancellationToken)
@@ -96,8 +100,6 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         {
             throw;
         }
-
-        dbUser.ImageURL = null;
     }
 
     public override void Create(User entity, CancellationToken cancellationToken)
